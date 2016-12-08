@@ -1,0 +1,122 @@
+---
+title: "New York City Stop-Question-Frisk Analysis"
+author: "Jacky Lee, Tyler Sam, Sam Tan, Julianne Lin"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+knitr::opts_chunk$set(eval=TRUE)
+knitr::opts_chunk$set(warning=FALSE)
+knitr::opts_chunk$set(message=FALSE)
+library(kernlab)
+data(spam)
+sqf2010 = read.csv("2010_sqf_m35.csv")
+sqf2015 = read.csv("2015_sqf_m35.csv")
+```
+
+**The report should have the following structure:**
+
+1. Introduction (overview in your own words of the data; summary of your team's chosen question, why it's important, and what you found; roadmap for the remainder of the report.)
+
+2. Responses to required questions: Please list each question/answer separately, but write formal responses to the questions.
+
+3. Analysis of your chosen questions: Be sure to describe your questions and why they are interesting/important, and provide suitable graphical and statistical analysis of the data to answer the questions.
+
+4. Conclusions and Recommendations
+
+5. Bibliography if you use any external sources
+
+6. Appendices as necessary
+
+**Your report will be evaluated based on the following criteria:**
+- Writing: Structure of report; clarity of writing; quality of editing and polishing the document
+
+- Correctness of methodology: Appropriate graphical and statistical techniques are used to answer the questions
+
+- Validity of interpretation: The results are interpreted correctly
+
+- Significance: The team-chosen question(s) leverage the available data to provide insight into the stop-question-frisk policy.
+
+```{r}
+#1.
+testedHispanic = length(sqf2010$race[sqf2010$race=='WHITE-HISPANIC'])
+testedAsian = length(sqf2010$race[sqf2010$race=='ASIAN/PACIFIC ISLANDER'])
+trueHispanic = testedHispanic*19/18 - testedAsian/18
+trueAsian = testedAsian*19/18 - testedHispanic/18
+total = testedHispanic + testedAsian
+
+probHispanic = trueHispanic / total
+probAsian = trueAsian / total
+probActualHispanic = 0.95*trueHispanic / testedHispanic
+probActualAsian = 0.95*trueAsian / testedAsian
+```
+
+```{r}
+#2.
+friskedWhite <-sqf2010$frisked[sqf2010$race =="WHITE"]
+friskedBlack <-sqf2010$frisked[sqf2010$race =="BLACK"]
+friskedWhiteHispanic <-sqf2010$frisked[sqf2010$race =="WHITE-HISPANIC"]
+friskedBlackHispanic <-sqf2010$frisked[sqf2010$race =="BLACK-HISPANIC"]
+friskedAsianPI <-sqf2010$frisked[sqf2010$race =="ASIAN/PACIFIC ISLANDER"]
+friskedNatAmer <- sqf2010$frisked[sqf2010$race == "AMERICAN INDIAN/ALASKAN NATIVE"]
+
+t.test(x=friskedAsianPI, y = friskedNatAmer, conf.level = .95)
+```
+
+```{r}
+#3.
+agesM = subset(sqf2010, sqf2010$age>5&sqf2010$age<98&sqf2010$sex =="M")
+agesF = subset(sqf2010, sqf2010$age>5&sqf2010$age<98&sqf2010$sex =="F")
+qqnorm(agesM$age)
+qqnorm(agesF$age)
+# both subsets of the age appear normal
+qqplot(agesM$age, agesF$age)
+# since the qqplot is a line, the distributions are the same.
+
+agesStop = sqf2010$age[sqf2010$age<98&sqf2010$age>5]
+qqplot(agesM$age, agesStop)
+# since the qqplot is a line, the distributions are the same.
+```
+
+```{r}
+#4.
+sample_size = 22563
+# the sample size of the 2015 data set is 22563
+sample_mean <- mean(sqf2015$frisked)
+z_critical <- qnorm(0.975)
+pop_stdev <- sd(sqf2015$frisked)
+margin_of_error <- z_critical * (pop_stdev / sqrt(sample_size))
+confidence_interval <- c(sample_mean - margin_of_error,
+                         sample_mean + margin_of_error)
+print("Confidence interval:")
+confidence_interval
+
+# Confidence Interval for 2015 rates for being frisked(0.6700898 0.6823013)
+
+summary(sqf2015)
+sample_size = 639
+# the sample size of the 2015 data set is 22563
+sample_noId = subset(sqf2015, sqf2015$typeofid =="REFUSED" )
+sample_mean <- mean(sample_noId$frisked)
+z_critical <- qnorm(0.975)
+pop_stdev <- sd(sample_noId$frisked)
+margin_of_error <- z_critical * (pop_stdev / sqrt(sample_size))
+confidence_interval <- c(sample_mean - margin_of_error,
+                         sample_mean + margin_of_error)
+print("Confidence interval:")
+confidence_interval
+# Confidence Interval for 2015 rates for being frisked given that
+# one refused to show ID(0.5724871 0.6481702)
+```
+
+```{r}
+#5.
+m_best = step(lm(formula = perstop ~ arstmade + searched + inside + sumissue + frisked + weap + contrabn + radio + pf, data = sqf2010[sqf2010$perstop<30,]))
+plot(m_best$fitted.values, m_best$residuals)
+qqplot(m_best$fitted.values, m_best$residuals)
+
+# m_full = lm(complied ~ pop + hdi + dem + internet + freepress, data = goog_sub)
+# m_best = step(m_full)
+# plot(m_best$fitted.values, m_best$residuals)
+```
