@@ -1,0 +1,269 @@
+---
+title: "Final Project: New York City Stop-Question-Frisk Analysis"
+author: "Part I: Individual Analysis"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(eval=FALSE)
+knitr::opts_chunk$set(warning=FALSE)
+knitr::opts_chunk$set(message=FALSE)
+library(kernlab)
+library(ggplot2)
+library(reshape2)
+data(spam)
+```
+
+**Purpose:**
+
+This project will give you the opportunity to apply the techniques learned in Math 35 to a *real* and *sizeable* data set.  Moreover, you will use these techniques to draw conclusions about the efficacy of a controversial crime policy: the stop-question-frisk (SQF), also known as stop-and-frisk, program, in New York City.
+
+For this first part of the project, you will work *individually* to familiarize yourselves with the data.  This portion of the project is due **Tuesday, December 6, in class.**
+
+
+**Background:**
+
+In stop-question-frisk, a police officer is authorized to stop a pedestrian, question them, and then frisk their body searching for contraband items such as weapons or drugs.  The motivation for the policy was to prevent crimes from happening in the first place, though recent studies by the New York Civil Liberties Union suggest the policy did not achieve noticeable reductions in crime. For example, NYCLU estimates that guns were found in fewer than 0.2\% of stops.  Moreover, the policy was found to be discriminatory because Blacks and Latinos were stopped disproportionately more than their participation in crime would suggest. (Since 2014, new restrictions have limited the use of SQF, and the numbers of SQF incidents have decreased precipitously.)
+
+Data from New York City's stop-question-frisk (SQF) program is publicly available online.
+Whenever a person is stopped under SQF, the officer is required to fill out a form with
+information about the stop. Each year, the data is compiled and released by the city.
+Since the data from the form has over 100 columns, we will be giving you a version of the data
+that has been simplified to 22 of the most interesting fields. Every SQF stop from 2010
+and 2015 is still represented in the data. If you are interested, you can find the
+full data set at:
+http://www.nyc.gov/html/nypd/html/analysis_and_planning/stop_question_and_frisk_report.shtml.
+However, for this project, please **only use the version of the SQF data that has been
+provided for the course**.
+
+**Instructions: Individual Portion - Due in class on Tuesday December 6 - 15\% of Grade**
+
+The purpose of this individual portion is to help you get familiar with the data prior to class on Tuesday.  Class time on Tuesday, December 6 and Thursday, December 8 will be allocated for assigning teams and to work on the project in your groups.  Therefore, **attendance on these days will be mandatory and count as additional 10\% of your project grade**.
+
+Complete the following tasks on your own, using R. You do not need a formal writeup,
+but please submit your R code, either as an RMarkdown file, an R script file, or as a
+printout of your input and output from the R console.
+
+1. **Loading the Data**
+
+First, download the necessary files for the project by running
+```{r,eval=F}
+source("https://www.math.hmc.edu/m35f/FinalLoader.R")
+```
+This will download the `2010_sqf_m35.csv` and `2015_sqf_m35.csv` files, which contain
+the SQF data from 2010 and 2015, respectively, and `NewYorkSQF.R`, which contains the initial commands for getting setup.
+
+To load the data from the files into R, run the commands
+```{r,eval=F}
+sqf2010 = read.csv("2010_sqf_m35.csv")
+sqf2015 = read.csv("2015_sqf_m35.csv")
+```
+These will load the 2010 and 2015 SQF data into the data frames `sqf2010` and `sqf2015`,
+respectively. If you close R and want to reload the data, you will first want to set your
+working directory to the `Math35` folder within your `Documents` folder, which is where the
+`2010_sqf_m35.csv` and `2015_sqf_m35.csv` files are located. To do so without having
+to download the .csv files again by re-running the `source()` command above, you can
+run the following code, which is at the top of the `NewYorkSQF.R` file:
+```{r,eval=F}
+setwd('~')
+if(regexpr('Documents',getwd())==-1) {
+  if(!dir.exists('~/Documents')) dir.create('~/Documents')
+  setwd('~/Documents')
+}
+if(!dir.exists('Math35')) dir.create('Math35')
+setwd('Math35')
+```
+
+
+Below is a key for the fields (columns) in the data frame.
+
+Column name | Description
+------------|---------------------------------------------------------------
+datestop    | Date of the stop in MMDDYYYY format
+timestop    | Time of the stop in HHMM format, where HH is in 24 hour format
+sex         | Sex of the suspect
+race        | Race of the suspect
+age         | Age of the suspect
+weight      | Weight of the suspect
+haircolr    | Hair color of the suspect
+eyecolor    | Eye color of the suspect
+build       | Suspect's build
+city        | City (borough) of New York City in which stop occurred
+inside      | Stop was made inside (1) or outside (0)
+location    | Was location of the stop at a transit authority or housing authority?
+typeofid    | Type of ID provided by suspect
+perobs      | Period of observation, in minutes
+perstop     | Period of stop, in minutes
+arstmade    | Was an arrest made? (1=yes, 0=no)
+sumissue    | Was a summons issued?  (1=yes, 0=no)
+frisked     | Was the suspect frisked?  (1=yes, 0=no)
+searched    | Was the suspect searched? (1=yes, 0=no)
+contrabn    | Was contraband found on the suspect?  (1=yes, 0=no)
+radio       | Was there a radio run?  (1=yes, 0=no)
+height      | Height of the suspect, in inches
+pf          | Was physical force used by the officer (including hands, weapons drawn, baton, handcuffs, pepper spray)?  (1=yes, 0=no)
+weap        | Was a weapon (pistol, knife, assualt rifle, machine gun, or other) found on the suspect? (1=yes, 0=no)
+
+
+2. **Summarize the Data**
+
+Use the ``head``, ``summary``, and ``dim`` commands to get an initial look at the
+contents of the data.  How many entries are in the 2010 data? How many entries are in the 2015 data?  
+
+For the rest of the problems in this preliminary section, choose either the 2010
+or 2015 data. You may want to refer to Lecture 7 on Exploratory Data Analysis
+for the necessary commands to complete this section.
+
+***
+
+```{r,eval=TRUE}
+sqf2010 = read.csv("2010_sqf_m35.csv")
+head(sqf2010)
+summary(sqf2010)
+dim(sqf2010)
+sqf2015 = read.csv("2015_sqf_m35.csv")
+head(sqf2015)
+summary(sqf2015)
+dim(sqf2015)
+```
+
+***
+***
+
+3.  **Bar Plots and Box Plots**
+
+Choose at least two of the quantitative columns and make a comparison bar plot over
+the categories in another column. Repeat with box plots instead of bar plots.
+
+***
+
+```{r,eval=TRUE}
+data = sqf2015[,c('race','weight','height')]
+data = data[data$weight<300,]
+melted = melt(data,id.vars='race')
+names(melted)[2] = 'Category'
+data = melt(acast(melted, race ~ Category, mean))
+names(data)[2] = 'Category'
+
+ggplot(data= data, aes(x=Var1, y=value, fill=Category))+
+  geom_bar(stat="identity", position=position_dodge(), color="black")+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 70, hjust = 1, size = rel(0.7) ))+
+  ggtitle("Mean Period of Obs and Stop for Each Race")
+
+
+ggplot(data=melted, aes(x=race, y=value))+
+  geom_boxplot()+
+  facet_wrap(~Category)+
+  theme(axis.text.x = element_text(angle = 70, hjust = 1, size = rel(0.7) ))+
+  ggtitle("Boxplot Period of Observations and Stop for Each Race")
+```
+
+***
+***
+
+4.  **Pairwise Plots**
+
+Make pairwise plots, with correlations calculated, of the quantitative columns and determine which columns (if any) seem linearly related. Use linear regression to check the strength of the relationship (see Lecture 11-12 for linear regressions).
+
+***
+
+```{r,eval=TRUE}
+sqf2015$perstop <- as.numeric(sqf2015$perstop)
+panel.pearson <- function(x, y, ...) {
+horizontal <- (par("usr")[1] + par("usr")[2]) / 2; 
+vertical <- (par("usr")[3] + par("usr")[4]) / 2; 
+text(horizontal, vertical, format(abs(cor(x,y)), digits=2)) 
+}
+pairs(as.matrix(sqf2015[,c('age','weight','perobs','perstop','height')])
+      , upper.panel=panel.pearson)
+summary(step(lm(formula = weight ~ age + perobs + perstop + height, data = sqf2015)))
+```
+
+***
+***
+
+5.  **Histograms and QQ Plots**
+
+Use histograms of the quantitative columns to determine which, if any, are normally
+distributed. Use QQ-plots to verify. You may notice that several of the columns
+have outlier points which you may want to ignore to obtain a histogram that is
+easier to read. You can use a Boolean expression to filter data so you only keep
+the reasonable data points. For example, to look at only the ages in the 2010 data
+that are below 100, we can use:
+```{r,eval=F}
+sqf2010$age[sqf2010$age<100]
+```
+
+***
+
+```{r,eval=TRUE}
+hist(sqf2015$weight[sqf2015$weight<400])
+qqnorm(sqf2015$weight[sqf2015$weight<400])
+qqline(sqf2015$weight[sqf2015$weight<400])
+```
+
+***
+***
+
+6.  **Categorical Data**
+
+For non-quantitative (categorical) data, we will need another way to dissect the data based
+on categories. We can use the ``table()`` command to compare one column with another.
+Type `?table()` to see how to use the command. To compare the number of arrests in
+2010 for each race, type:
+```{r, eval=F}
+table(sqf2010$arstmade,sqf2010$race)
+```
+Try some other comparisons with the non-quantitative data to see if you can find any
+interesting relationships.
+
+***
+
+```{r,eval=TRUE}
+table(sqf2015$searched,sqf2015$race)
+```
+
+***
+***
+
+7. **Binary Variables**
+
+Several of the non-quantitative binary variables have been expressed as 1 for "Yes"
+and "0" for no. We will see that this is convenient if we want to compare the
+results for two subgroups of the SQF data to see if they are different. For example,
+if we want to compare the arrest rates for people with gray hair versus people with
+salt and pepper hair, we can first make vectors for each subgroup that tell us
+whether each person was arrested or not.
+```{r,eval=F}
+arrestsGrayHair <- sqf2015$arstmade[sqf2015$haircolr=="GRAY"]
+arrestsSPHair <- sqf2015$arstmade[sqf2015$haircolr=="SALT AND PEPPER"]
+```
+The means for each subgroup now represents the arrest rate for the group (why?).
+We can now use a two-sample T-test to determine if their means (= arrest rates) are
+different. Try this on the data with variables of your choice and find at least one
+pair of (binary variable and two categories) where the rates for the two groups are
+different with 95\% confidence. You may want to refer to Lecture 10 for how to
+conduct a two-sample T-test.
+
+***
+
+```{r,eval=TRUE}
+arrestsGrayHair <- sqf2015$arstmade[sqf2015$race=="BLACK"]
+arrestsSPHair <- sqf2015$arstmade[sqf2015$race=="WHITE"]
+t.test(x=arrestsGrayHair, y=arrestsSPHair, conf.level=0.95)
+```
+
+***
+***
+
+**Bibliography**
+
+New York Civil Liberties Union website: http://www.nyclu.org/node/1598
+
+New York Civil Liberties Union, "Stop and Frisk During the Bloomberg Administration", http://www.nyclu.org/files/publications/stopandfrisk_briefer_2002-2013_final.pdf
+
+Geller, A., Fagan, J., Tyler, T., Link, B., "Aggressive Policing and the Mental Health of Young Urban Men", *Am J Public Health.* 2014 December; 104(12): 2321-2327.
+Published online 2014 December. doi:  10.2105/AJPH.2014.302046
+
