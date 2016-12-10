@@ -38,6 +38,14 @@ sqf2015 = read.csv("2015_sqf_m35.csv")
 
 - Significance: The team-chosen question(s) leverage the available data to provide insight into the stop-question-frisk policy.
 
+(No Intro yet)
+
+1. Determine the probability that someone who is identified by the officer as Hispanic is actually Hispanic and the probability that someone who is identified as Asian/Pacific Islander is actually API. What does this say about how we utilize the race column of the data?
+
+The question asks for the conditional probability that you are actually a certain race given you are identified as that race, P(actual | tested) where tested implies identification. We are given the probability of correct identification. Thus, given the data from SQF2010, we are able to set up a system of equations to solve for the number of true Asians and true Hispanics (see code chunk #1 lines 53-54). We did this by adding the product of identified (tested) Asians and their respective probabilities and the product of identified Hispanics and their respective probabilities. The probabilities we used We then used this information to calculate the probability of being Asian/Hispanic given the identification (lines 59-60).
+
+Primarily, we utilized the SQF2010 race column data in that we used it to find the number of identified Asians and the number of identified Hispanics. Knowing these numbers (testedHispanic line 51, and testedAsian line 52), allows us to find various probabilities because a lot of the calculations are based on the condition of having been identified as race x.
+
 ```{r}
 #1.
 testedHispanic = length(sqf2010$race[sqf2010$race=='WHITE-HISPANIC'])
@@ -52,8 +60,17 @@ probActualHispanic = 0.95*trueHispanic / testedHispanic
 probActualAsian = 0.95*trueAsian / testedAsian
 ```
 
+2. Compare the rates at which suspects stopped in 2010 were frisked, broken down by race. Are the differences in rates between the various groups statistically significant? Which borough(s) had the largest differences? The smallest?
+
 ```{r}
 #2.
+Q <- sqf2010$frisked[sqf2010$city=="QUEENS"]
+B <- sqf2010$frisked[sqf2010$city==""]
+x <- data.frame(data=c(Q,B,M,BX,SI),
+                key=c(
+                  rep('Queens', length(Q)),
+                  rep('')))
+
 friskedWhite <-sqf2010$frisked[sqf2010$race =="WHITE"]
 friskedBlack <-sqf2010$frisked[sqf2010$race =="BLACK"]
 friskedWhiteHispanic <-sqf2010$frisked[sqf2010$race =="WHITE-HISPANIC"]
@@ -63,6 +80,8 @@ friskedNatAmer <- sqf2010$frisked[sqf2010$race == "AMERICAN INDIAN/ALASKAN NATIV
 
 t.test(x=friskedAsianPI, y = friskedNatAmer, conf.level = .95)
 ```
+
+3. In this question, we analyzed the distribution of the ages of male suspects and female suspects individually and then compare them with each other. First, we took out extraneous data by creating subsets that exclude ages below 5 and above 98. To determine their individual distributions, we used qqnorm to check for normality and concluded that both male and female suspects' ages are distributed normally. To analyze both distributions in relation with each other, we used a qqplot with the subsets of the ages of male and female suspects. The qqplot appears to be linear, thus we concluded that the distributions are the same. Later, we analyzed the age distribution for male suspects in relation to the age distribution of the entire population of suspects stopped in 2010. Again, we created a subset of the population of stopped suspects by limitingthe age to between 5 and 98. We then compared using the qqplot command using the arguments of the male subset from earlier and the total populatio subset we created. Again, qqplot shows a linear relationship so we conclude the distributions are the same. In conclusion, both distributions of the ages of male and female suspects in 2010 are normally distributed. Both these age distributions are the same, and the the male age distribution and the total stopped suspect distribution are also the same.
 
 ```{r}
 #3.
@@ -78,6 +97,8 @@ agesStop = sqf2010$age[sqf2010$age<98&sqf2010$age>5]
 qqplot(agesM$age, agesStop)
 # since the qqplot is a line, the distributions are the same.
 ```
+
+4. To analyze any differences between the probability of being frisked in general and the probability of being frisked when not providing identification, we first calculated the confidence intervals for both. To calculate the CI for the general sample of frisked suspects, we first found the sample size, mean, critical z-value, and standard deviation. Then using that information, we found the margin of error from the sample mean and used that to calculate the confidence interval. The interval for 2015 rate of being frisked is (0.6700898, 0.6823013). Thus we have 95% confidence that the probability of being frisked is between 0.67 and 0.68, roughly speaking. Similarly, we calculated the confidence interval of the sample of frisked suspects who didn't provide identification. In this case, our sample is the subset of 2015 suspects whose identification is listed as 'REFUSED'. Using the same process we found the CI of 95% confidence for the sample of 2015 frisked suspects who didn't provide ID. Our confidence interval came out as (0.5724871, 0.6481702). This means that the probability of being frisked having refused identification is between 0.57 and 0.65. In conclusion, these two samples have a significant difference in probability of being frisked. The confidence intervals don't overlap, which means that the the probability of anyone from the general population of being frisked is outside the 95% confidence interval of that of those who refused identification. Basically, we conclude from our data that we have significant enough data to say that in 2015 there is a smaller probability of being frisked when identification is refused.
 
 ```{r}
 #4.
@@ -109,6 +130,8 @@ confidence_interval
 # Confidence Interval for 2015 rates for being frisked given that
 # one refused to show ID(0.5724871 0.6481702)
 ```
+
+5. 
 
 ```{r}
 #5.
