@@ -10,6 +10,8 @@ knitr::opts_chunk$set(eval=TRUE)
 knitr::opts_chunk$set(warning=FALSE)
 knitr::opts_chunk$set(message=FALSE)
 library(kernlab)
+library(reshape2)
+library(ggplot2)
 data(spam)
 sqf2010 = read.csv("2010_sqf_m35.csv")
 sqf2015 = read.csv("2015_sqf_m35.csv")
@@ -40,7 +42,7 @@ sqf2015 = read.csv("2015_sqf_m35.csv")
 
 ```{r}
 #1.
-testedHispanic = length(sqf2010$race[sqf2010$race=='WHITE-HISPANIC'])
+testedHispanic = length(sqf2010$race[sqf2010$race=='WHITE-HISPANIC' | sqf2010$race=='BLACK-HISPANIC'])
 testedAsian = length(sqf2010$race[sqf2010$race=='ASIAN/PACIFIC ISLANDER'])
 trueHispanic = testedHispanic*19/18 - testedAsian/18
 trueAsian = testedAsian*19/18 - testedHispanic/18
@@ -54,14 +56,31 @@ probActualAsian = 0.95*trueAsian / testedAsian
 
 ```{r}
 #2.
-friskedWhite <-sqf2010$frisked[sqf2010$race =="WHITE"]
-friskedBlack <-sqf2010$frisked[sqf2010$race =="BLACK"]
-friskedWhiteHispanic <-sqf2010$frisked[sqf2010$race =="WHITE-HISPANIC"]
-friskedBlackHispanic <-sqf2010$frisked[sqf2010$race =="BLACK-HISPANIC"]
-friskedAsianPI <-sqf2010$frisked[sqf2010$race =="ASIAN/PACIFIC ISLANDER"]
-friskedNatAmer <- sqf2010$frisked[sqf2010$race == "AMERICAN INDIAN/ALASKAN NATIVE"]
+par(mfrow=c(2,3))
+races = c('AMERICAN INDIAN/ALASKAN NATIVE','ASIAN/PACIFIC ISLANDER','BLACK','BLACK-HISPANIC','WHITE','WHITE-HISPANIC')
+city = c('BRONX','BROOKLYN','MANHATTAN','QUEENS','STATEN IS')
 
-t.test(x=friskedAsianPI, y = friskedNatAmer, conf.level = .95)
+analyze = function(dataSet,title) {
+    frisked = c()
+    data = c()
+    for (i in races) {
+        data = append(data,dataSet$frisked[dataSet$race == i])
+        frisked = append(frisked,sum(data) / length(data))
+    }
+    barplot(frisked,main=title,xlab='Race',ylab='Proportion Frisked',names.arg=races,cex.names=0.4,las=2)
+    
+    #t.test(data[races == "WHITE"],data[races == "BLACK"])
+    #t.test(data[races == races[2]],data[races == races[3]])
+}
+
+analyze(sqf2010,'Proportion of People Frisked By Race')
+for (i in city) {
+    analyze(sqf2010[sqf2010$city==i,],i)
+}
+queens = sqf2010[sqf2010$city=='QUEENS',]
+bronx = sqf2010[sqf2010$city=='BRONX',]
+
+
 ```
 
 ```{r}
