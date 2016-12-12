@@ -186,7 +186,7 @@ prop.test(7761, 8749, alternative = c("two.sided", "less", "greater"), conf.leve
 # Since .9 is not in our 95% confidence interval, we can conclude that the proportion of males who are black or latino, between the ages 14 and 24, and innocent decreased in 2015 compared to the percentage in 2003 to 2013.
 ```
 
-According to this analysis of race and crime in Chicago, Black people are 85\% more likely than Whites to commit a violent crime compared to whites, while Latino people are 10\% less likely than Whites. Compare this data to the proportion of Black and Latino people who were stopped. (3)Does the data of sqf2015 support stopping blacks at higher rates compared to whites? (4)Does the data of sqf2015 support stopping latinos at lower rates compared?
+According to this analysis of race and crime in Chicago, Black people are 85\% more likely than Whites to commit a violent crime compared to whites, while Latino people are 10\% less likely than Whites. Compare this data to the proportion of Black and Latino people who were stopped. (3)Does the data of sqf2015 suggest that police follow the statistic above comparing black and white crime rates when stopping people? (4)Does the data of sqf2015 suggest that police follow the statistic above comparing latino and white crime rates when stopping people?
 Link: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1449156/
 
 ```{r}
@@ -206,7 +206,7 @@ dim(subset(sqf2015, sqf2015$race == "WHITE"))
 
 prop.test(344, 2514, alternative = c("two.sided", "less", "greater"), conf.level = .95)
 # the 95% confidence interval for this proportion is (.124, .151).
-# Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, it is justified for police to stop more blacks than whites. 
+# Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, the police do follow the statistic above because they do stop a larger porportion of blacks than whites. 
 
 # Question 4
 latinoArrest = subset(sqf2015, sqf2015$arstmade == 1 & (sqf2015$race == "BLACK-HISPANIC" | sqf2015$race == "WHITE-HISPANIC"))
@@ -223,6 +223,6 @@ dim(subset(sqf2015, sqf2015$race == "WHITE"))
 
 prop.test(344, 2514, alternative = c("two.sided", "less", "greater"), conf.level = .95)
 # the 95% confidence interval for this proportion is (.124, .151).
-# Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, it is not justified for police to stop more whites than latinos. 
+# Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, the police do not follow the statistic above because they do not stop a larger porportion of whites than latinos. 
 ```
 
