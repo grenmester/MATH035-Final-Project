@@ -45,23 +45,25 @@ sqf2015 = read.csv("2015_sqf_m35.csv")
 1. The question asks for the conditional probability that you are actually a certain race given you are identified as that race, P(actual | tested) where tested implies identification. We are given the probability of correct identification. Thus, given the data from SQF2010, we are able to set up a system of equations to solve for the number of true Asians and true Hispanics. We used this information to calculate the probability of actually being Asian/Hispanic given the identification. This calculation shows us that the actual proportions of Asians and Hispanics is different from what the data claims it to be.
 
 ```{r}
-testedHispanic = length(sqf2010$race[sqf2010$race=='WHITE-HISPANIC' | sqf2010$race=='BLACK-HISPANIC'])
+testedHispanic = length(sqf2010$race[sqf2010$race=='WHITE-HISPANIC' 
+                                     | sqf2010$race=='BLACK-HISPANIC'])
 testedAsian = length(sqf2010$race[sqf2010$race=='ASIAN/PACIFIC ISLANDER'])
 trueHispanic = testedHispanic*19/18 - testedAsian/18
 trueAsian = testedAsian*19/18 - testedHispanic/18
 total = testedHispanic + testedAsian
 
-probHispanic = trueHispanic / total
-probAsian = trueAsian / total
-probActualHispanic = 0.95*trueHispanic / testedHispanic
-probActualAsian = 0.95*trueAsian / testedAsian
+probHispanic = trueHispanic / total; probHispanic
+probAsian = trueAsian / total; probAsian
+probActualHispanic = 0.95*trueHispanic / testedHispanic; probActualHispanic
+probActualAsian = 0.95*trueAsian / testedAsian; probActualAsian
 ```
 
-2. 
+2. Overall, Blacks were frisked the most and Asians were frisked the least. The differences in rates between the various groups were, as shown by `summary(lm(frisked ~ raceWhite,data=sqf2010))`, were statistically significant. The largest differences were found in Staten Island and the smallest differences were found in Queens.
 
 ```{r}
 par(mfrow=c(2,3))
-races = c('AMERICAN INDIAN/ALASKAN NATIVE','ASIAN/PACIFIC ISLANDER','BLACK','BLACK-HISPANIC','WHITE','WHITE-HISPANIC')
+races = c('AMERICAN INDIAN/ALASKAN NATIVE','ASIAN/PACIFIC ISLANDER',
+          'BLACK','BLACK-HISPANIC','WHITE','WHITE-HISPANIC')
 city = c('BRONX','BROOKLYN','MANHATTAN','QUEENS','STATEN IS')
 
 analyze = function(dataSet,title) {
@@ -71,25 +73,22 @@ analyze = function(dataSet,title) {
         data = append(data,dataSet$frisked[dataSet$race==i])
         frisked = append(frisked,sum(data)/length(data))
     }
-    barplot(frisked,main=title,xlab='Race',ylab='Proportion Frisked',names.arg=races,cex.names=0.4,las=2)
+    barplot(frisked,main=title,xlab='Race',ylab='Proportion Frisked',
+            names.arg=races,cex.names=0.4,las=2)
 }
 
-analyze(sqf2010,'Proportion of People Frisked By Race')
+analyze(sqf2010,'Proportion Frisked by Race')
 for (i in city) {
     analyze(sqf2010[sqf2010$city==i,],i)
 }
-queens = sqf2010[sqf2010$city=='QUEENS',]
-bronx = sqf2010[sqf2010$city=='BRONX',]
 
 sqf2010$raceWhite = relevel(sqf2010$race,'WHITE')
 summary(lm(frisked ~ raceWhite,data=sqf2010))
-
-# most significant differences
 summary(lm(formula=frisked ~ raceWhite,data=subset(sqf2010,city=='STATEN IS')))
-
-# most similar rates
 summary(lm(formula=frisked ~ raceWhite,data=subset(sqf2010,city=='QUEENS')))
 ```
+
+The following analysis was also run and we determined that the differences in these boroughs were not as significant as in the two other boroughs.
 
 ```{r,eval=FALSE}
 summary(lm(formula=frisked ~ raceWhite,data=subset(sqf2010,city=='BRONX')))
@@ -120,39 +119,29 @@ sample_mean = mean(sqf2015$frisked)
 z_critical = qnorm(0.975)
 pop_stdev = sd(sqf2015$frisked)
 margin_of_error = z_critical * (pop_stdev / sqrt(sample_size))
-confidence_interval = c(sample_mean - margin_of_error,sample_mean + margin_of_error)
-print("Confidence interval:")
+confidence_interval = c(sample_mean - margin_of_error,
+                        sample_mean + margin_of_error)
 confidence_interval
-
-# Confidence Interval for 2015 rates for being frisked(0.6700898 0.6823013)
-
 summary(sqf2015)
 sample_size = 639
-# the sample size of the 2015 data set is 22563
 sample_noId = subset(sqf2015, sqf2015$typeofid =="REFUSED" )
-sample_mean <- mean(sample_noId$frisked)
-z_critical <- qnorm(0.975)
-pop_stdev <- sd(sample_noId$frisked)
-margin_of_error <- z_critical * (pop_stdev / sqrt(sample_size))
-confidence_interval <- c(sample_mean - margin_of_error,
+sample_mean = mean(sample_noId$frisked)
+z_critical = qnorm(0.975)
+pop_stdev = sd(sample_noId$frisked)
+margin_of_error = z_critical * (pop_stdev / sqrt(sample_size))
+confidence_interval = c(sample_mean - margin_of_error,
                          sample_mean + margin_of_error)
-print("Confidence interval:")
 confidence_interval
-# Confidence Interval for 2015 rates for being frisked given that
-# one refused to show ID(0.5724871 0.6481702)
 ```
 
 5. 
 
 ```{r}
-#5.
-m_best = step(lm(formula = perstop ~ arstmade + searched + inside + sumissue + frisked + weap + contrabn + radio + pf, data = sqf2010[sqf2010$perstop<30,]))
+m_best = step(lm(formula = perstop ~ arstmade + searched + inside + sumissue + 
+                     frisked + weap + contrabn + radio + pf, 
+                 data = sqf2010[sqf2010$perstop<30,]))
 plot(m_best$fitted.values, m_best$residuals)
 qqplot(m_best$fitted.values, m_best$residuals)
-
-# m_full = lm(complied ~ pop + hdi + dem + internet + freepress, data = goog_sub)
-# m_best = step(m_full)
-# plot(m_best$fitted.values, m_best$residuals)
 ```
 
 Self-generated questions:
@@ -175,13 +164,16 @@ To test our hypothesis, we first created a subset of the male Black/Hispanic bet
 
 ```{r}
 # Question 1
-ages1424BL= subset(sqf2015, sqf2015$age>13 & sqf2015$age<25 & (sqf2015$race =="BLACK" | sqf2015$race == "WHITE-HISPANIC" | sqf2015$race == "BLACK-HISPANIC"))
+ages1424BL= subset(sqf2015, sqf2015$age>13 & sqf2015$age<25 & 
+                       (sqf2015$race =="BLACK" | sqf2015$race == "WHITE-HISPANIC" | 
+                            sqf2015$race == "BLACK-HISPANIC"))
 ages1424BLM = subset(ages1424BL, ages1424BL$sex == "M")
 dim(ages1424BLM)
 # the number of samples in sqf2015 given that one is male, black or hispanic, and between the ages 14 and 24 is 8749.
 dim(sqf2015)
 # the number of samples in sqf2015 is 22563
-prop.test(8749, 22563, alternative = c("two.sided", "less", "greater"), conf.level = .95)
+prop.test(8749, 22563, alternative = c("two.sided", "less", "greater"), 
+          conf.level = .95)
 # the 95% confidence interval for this proportion is (.381, .394).
 # Since .41 is not in our 95% confidence interval, we can conclude that the proportion of males who are black or latino between the ages 14 and 24 decreased in 2015 compared to the percentage in 2003 to 2013.
 
@@ -192,7 +184,8 @@ dim(ages1424BLMI)
 # the number of samples in sqf2015 given that one is male, black or hispanic, between the ages 14 and 24, and not arrested is 7761
 dim(ages1424BLM)
 # the number of samples in sqf2015 given that one is male, black or hispanic, and between the ages 14 and 24 is 8749.
-prop.test(7761, 8749, alternative = c("two.sided", "less", "greater"), conf.level = .95)
+prop.test(7761, 8749, alternative = c("two.sided", "less", "greater"), 
+          conf.level = .95)
 # the 95% confidence interval for this proportion is (.880, .894).
 # Since .9 is not in our 95% confidence interval, we can conclude that the proportion of males who are black or latino, between the ages 14 and 24, and not-arrested decreased in 2015 compared to the percentage in 2003 to 2013.
 ```
@@ -209,30 +202,37 @@ whiteArrest = subset(sqf2015,sqf2015$arstmade == 1 & sqf2015$race == "WHITE")
 dim(blackArrest)
 dim(subset(sqf2015, sqf2015$race == "BLACK"))
 
-prop.test(1993, 11950, alternative = c("two.sided", "less", "greater"), conf.level = .95)
+prop.test(1993, 11950, alternative = c("two.sided", "less", "greater"), 
+          conf.level = .95)
 # the 95% confidence interval for this proportion is (.160, .174).
 
 dim(whiteArrest)
 dim(subset(sqf2015, sqf2015$race == "WHITE"))
 
-prop.test(344, 2514, alternative = c("two.sided", "less", "greater"), conf.level = .95)
+prop.test(344, 2514, alternative = c("two.sided", "less", "greater"), 
+          conf.level = .95)
 # the 95% confidence interval for this proportion is (.124, .151).
 # Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, it is justified for police to stop more blacks than whites. 
 
 # Question 4
-latinoArrest = subset(sqf2015, sqf2015$arstmade == 1 & (sqf2015$race == "BLACK-HISPANIC" | sqf2015$race == "WHITE-HISPANIC"))
+latinoArrest = subset(sqf2015, sqf2015$arstmade == 1 & 
+                          (sqf2015$race == "BLACK-HISPANIC" | 
+                               sqf2015$race == "WHITE-HISPANIC"))
 
 #proportion of blacks who were arrested out of all black individuals who were stopped by the police.
 dim(latinoArrest)
-dim(subset(sqf2015, sqf2015$race == "BLACK-HISPANIC" | sqf2015$race == "WHITE-HISPANIC"))
+dim(subset(sqf2015, sqf2015$race == "BLACK-HISPANIC" | 
+               sqf2015$race == "WHITE-HISPANIC"))
 
-prop.test(1423, 6499, alternative = c("two.sided", "less", "greater"), conf.level = .95)
+prop.test(1423, 6499, alternative = c("two.sided", "less", "greater"), 
+          conf.level = .95)
 # the 95% confidence interval for this proportion is (.209, .229).
 
 dim(whiteArrest)
 dim(subset(sqf2015, sqf2015$race == "WHITE"))
 
-prop.test(344, 2514, alternative = c("two.sided", "less", "greater"), conf.level = .95)
+prop.test(344, 2514, alternative = c("two.sided", "less", "greater"), 
+          conf.level = .95)
 # the 95% confidence interval for this proportion is (.124, .151).
 # Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, it is not justified for police to stop more whites than latinos. 
 ```
