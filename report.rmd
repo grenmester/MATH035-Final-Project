@@ -17,30 +17,13 @@ sqf2010 = read.csv("2010_sqf_m35.csv")
 sqf2015 = read.csv("2015_sqf_m35.csv")
 ```
 
-**The report should have the following structure:**
+# Introduction
 
-1. Introduction (overview in your own words of the data; summary of your team's chosen question, why it's important, and what you found; roadmap for the remainder of the report.)
+To generate our questions, we analyzed two papers, "Stop and Frisk During the Bloomberg Administration" and "Social Anatomy of Racial and Ethnic Disparities in Violence." Using a few claims from these papers, we analyzed whether or not our data supported such claims. These claims include: young Black and Latino males accounted for a disproportionate amount of stops; the vast majority of those stopped were stopped for no reason; the police followed statistics that related race and crime for both Blacks and Latinos. Overall, we found that Blacks and Latinos did indeed constitute a disproportionate amount of stops, of which an extraordinarily large portion were not justified. Furthermore, the police do follow statistical trends for crime for Blacks, but not for Latinos. This importance of these findings is that they suggest that police may be guilty of racial discrimination when stopping people, especially Black and Latino males between the ages of 14 and 24. In the following sections, we performed various statistical analyses of the data set, using statistical models learned in the Math 35 course at Harvey Mudd College, including hypothesis testing, confidence intervals, and linear models.
 
-2. Responses to required questions: Please list each question/answer separately, but write formal responses to the questions.
+In this paper, we explored the trends in those who were stopped by the New York Police Department in the years 2010 and 2015, according to the implemented Stop, Question, and Frisk measure (SQF). This data contained various statistics, from physical attributes of the suspect to the nature of the stop (location, time spent waiting, what was found on the suspect, etc.).
 
-3. Analysis of your chosen questions: Be sure to describe your questions and why they are interesting/important, and provide suitable graphical and statistical analysis of the data to answer the questions.
-
-4. Conclusions and Recommendations
-
-5. Bibliography if you use any external sources
-
-6. Appendices as necessary
-
-**Your report will be evaluated based on the following criteria:**
-- Writing: Structure of report; clarity of writing; quality of editing and polishing the document
-
-- Correctness of methodology: Appropriate graphical and statistical techniques are used to answer the questions
-
-- Validity of interpretation: The results are interpreted correctly
-
-- Significance: The team-chosen question(s) leverage the available data to provide insight into the stop-question-frisk policy.
-
-(No Intro yet)
+# Required Questions
 
 1. The question asks for the conditional probability that you are actually a certain race given you are identified as that race, P(actual | tested) where tested implies identification. We are given the probability of correct identification. Thus, given the data from SQF2010, we are able to set up a system of equations to solve for the number of true Asians and true Hispanics. We used this information to calculate the probability of actually being Asian/Hispanic given the identification. This calculation shows us that the actual proportions of Asians and Hispanics is different from what the data claims it to be.
 
@@ -122,9 +105,8 @@ margin_of_error = z_critical * (pop_stdev / sqrt(sample_size))
 confidence_interval = c(sample_mean - margin_of_error,
                         sample_mean + margin_of_error)
 confidence_interval
-summary(sqf2015)
 sample_size = 639
-sample_noId = subset(sqf2015, sqf2015$typeofid =="REFUSED" )
+sample_noId = subset(sqf2015, sqf2015$typeofid =="REFUSED")
 sample_mean = mean(sample_noId$frisked)
 z_critical = qnorm(0.975)
 pop_stdev = sd(sample_noId$frisked)
@@ -146,7 +128,7 @@ plot(m_best$fitted.values, m_best$residuals)
 qqplot(m_best$fitted.values, m_best$residuals)
 ```
 
-Self-generated questions:
+# Self-Generated Questions
 
 According to an analysis of the Stop and Frisk measure between 2002 and 2013 done by the New York Civil Liberties Union, young black and Latino men were stopped disproportionately by a huge margin. It claimed that:
 
@@ -158,14 +140,7 @@ Link: http://www.nyclu.org/files/publications/stopandfrisk_briefer_2002-2013_fin
 
 To identify the presence of this trend in the 2015 suspect data, we created a subset for the two samples. First we created a subset of the respective races (Black-Hispanic and White-Hispanic for the Hispanic sample, and Black for the Black sample) and the ages trimmed to greater than 13 and less than 25 to comply with the sample of Blacks and Hispanics of age 14-24. Then, we further narrowed the subset by creating another subset of the previous by specifying sex as male. We found the population of this sample by finding the dimensions of this subset and got 8749. Using dimension again, we also found the population of the entire sample of all suspects, which was 22563. In this case, our hypothesis is that the mean of the 2015 data for stopped young Black and Hispanic males is equal to 41%. The alternative hypothesis is that the 2015 mean is NOT 41%. To disprove or fail to disprove this hypothesis, we found the 95% confidence interval using both the populations we calculated above (8749 and 22564 respectively). The confidence interval we found is (0.381, 0.394). 41% or 0.41 is outside the 95% interval, so we can disprove our initial hypothesis. We can say with 95% confidence that the percentage of stopped suspects that are Black and Hispanic males between 14 and 24 is between 38% and 39%. Thus we can conclude that between 2013 and 2015, the proportion of males who are Black and Hispanic between 14 and 24 decreased. This is important because we can then speculate as to whether discrimination against Black and Hispanic suspects has lessened. 
 
-2. In the second part of this question, we trying to identify how many of the stopped Black and Hispanic males were actually not arrested in 2015. In the 2003-2013 analysis shows that 90% of young Black and Hispanic males stopped suspects were not arrested. Again, this furthers the speculation that there is racial discrimination against Black and Hispanic suspects because out of those stopped, a high percentage were actually not found to have enough evidence of crime for arrest. Our null hypothesis is that the percentage of non-arrested in 2015 is also 90%, and our alternate hypothesis is that the percentage is NOT 90%. Again, this is significant because proving or disproving the null hypothesis will allow us to concluded whether or not there is significant change from 2002-2013 and thus see if potential racial discrimination has increased or decreased or remained the same.
-
-To test our hypothesis, we first created a subset of the male Black/Hispanic between 14 and 24 sample we created in part 1. We narrowed down that sample by specifying "arrest made" as negative, or 0. The number of non-arrested Black/Hispanic male suspects between 14 and 24 is 7761. The 95% confidence interval using that number and the number of total Black/Hispanic young, male suspects stopped (8749 found in part 1) is (0.880, 0.894). In this situation, we reject the null hypothesis because 90% (or 0.9) is not within the confidence interval we found for the 2015 data. We can say with 95% confidence that the percentage of non-arrested from the set of Black/Hispanic stopped male suspects (between 14-24) decreased from 2002-2013. This suggests that more of the stopped suspects were found to be guilty enough for arrest. We can speculate that racial discrimination decreased because more of the stopped suspects should have been stopped and so less stopped suspects were stopped without "reason". 
-
-***(idk if I can say this question is significant because of racial discrimination tho because u could also argue that the percentage decreased because police are arresting more innocent people so racial discrimination actual increased)
-
 ```{r}
-# Question 1
 ages1424BL= subset(sqf2015, sqf2015$age>13 & sqf2015$age<25 & 
                        (sqf2015$race =="BLACK" | sqf2015$race == "WHITE-HISPANIC" | 
                             sqf2015$race == "BLACK-HISPANIC"))
@@ -178,9 +153,13 @@ prop.test(8749, 22563, alternative = c("two.sided", "less", "greater"),
           conf.level = .95)
 # the 95% confidence interval for this proportion is (.381, .394).
 # Since .41 is not in our 95% confidence interval, we can conclude that the proportion of males who are black or latino between the ages 14 and 24 decreased in 2015 compared to the percentage in 2003 to 2013.
+```
 
+2. In the second part of this question, we trying to identify how many of the stopped Black and Hispanic males were actually not arrested in 2015. In the 2003-2013 analysis shows that 90% of young Black and Hispanic males stopped suspects were not arrested. Again, this furthers the speculation that there is racial discrimination against Black and Hispanic suspects because out of those stopped, a high percentage were actually not found to have enough evidence of crime for arrest. Our null hypothesis is that the percentage of non-arrested in 2015 is also 90%, and our alternate hypothesis is that the percentage is NOT 90%. Again, this is significant because proving or disproving the null hypothesis will allow us to concluded whether or not there is significant change from 2002-2013 and thus see if potential racial discrimination has increased or decreased or remained the same.
 
-#Question 2
+To test our hypothesis, we first created a subset of the male Black/Hispanic between 14 and 24 sample we created in part 1. We narrowed down that sample by specifying "arrest made" as negative, or 0. The number of non-arrested Black/Hispanic male suspects between 14 and 24 is 7761. The 95% confidence interval using that number and the number of total Black/Hispanic young, male suspects stopped (8749 found in part 1) is (0.880, 0.894). In this situation, we reject the null hypothesis because 90% (or 0.9) is not within the confidence interval we found for the 2015 data. We can say with 95% confidence that the percentage of non-arrested from the set of Black/Hispanic stopped male suspects (between 14-24) decreased from 2002-2013. This suggests that more of the stopped suspects were found to be guilty enough for arrest. We can speculate that racial discrimination decreased because more of the stopped suspects should have been stopped and so less stopped suspects were stopped without "reason".
+
+```{r}
 ages1424BLMI = subset(ages1424BLM, ages1424BL$arstmade == 0)
 dim(ages1424BLMI)
 # the number of samples in sqf2015 given that one is male, black or hispanic, between the ages 14 and 24, and not arrested is 7761
@@ -192,13 +171,12 @@ prop.test(7761, 8749, alternative = c("two.sided", "less", "greater"),
 # Since .9 is not in our 95% confidence interval, we can conclude that the proportion of males who are black or latino, between the ages 14 and 24, and not-arrested decreased in 2015 compared to the percentage in 2003 to 2013.
 ```
 
-According to this analysis of race and crime in Chicago, Black people are 85% more likely than Whites to commit a violent crime compared to whites, while Latino people are 10% less likely than Whites. Compare this data to the proportion of Black and Latino people who were stopped. (3)Does the data of sqf2015 support stopping blacks at higher rates compared to whites? (4)Does the data of sqf2015 support stopping latinos at lower rates compared?
+3. According to this analysis of race and crime in Chicago, Black people are 85% more likely than Whites to commit a violent crime compared to whites, while Latino people are 10% less likely than Whites. Compare this data to the proportion of Black and Latino people who were stopped. (a) Does the data of sqf2015 support stopping blacks at higher rates compared to whites? (b) Does the data of sqf2015 support stopping latinos at lower rates compared?
 Link: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1449156/
 
-The 95% confidence interval for this proportion (of blacks who were arrested out of all Black individuals who were stopped by the police) is (.160, .174). The 95% confidence interval for this proportion (of Whites who were arrested out of all White individuals who were stopped by the police) is (.124, .151). Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, the police do follow the statistic above because they do stop a larger porportion of Blacks than Whites. The 95% confidence interval for this proportion (#4, Latinos) is (.209, .229). The 95% confidence interval for this (#4, Whites) proportion is (.124, .151). Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, the police do not follow the statistic above because they do not stop a larger porportion of Whites than Latinos.
+(a) The 95% confidence interval for this proportion (of blacks who were arrested out of all Black individuals who were stopped by the police) is (.160, .174). The 95% confidence interval for this proportion (of Whites who were arrested out of all White individuals who were stopped by the police) is (.124, .151). Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, the police do follow the statistic above because they do stop a larger porportion of Blacks than Whites. 
 
 ```{r}
-# Question 3
 blackArrest = subset(sqf2015, sqf2015$arstmade == 1 & sqf2015$race == "BLACK")
 whiteArrest = subset(sqf2015,sqf2015$arstmade == 1 & sqf2015$race == "WHITE")
 
@@ -217,8 +195,11 @@ prop.test(344, 2514, alternative = c("two.sided", "less", "greater"),
           conf.level = .95)
 # the 95% confidence interval for this proportion is (.124, .151).
 # Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, it is justified for police to stop more blacks than whites. 
+```
 
-# Question 4
+(b) The 95% confidence interval for this proportion (#4, Latinos) is (.209, .229). The 95% confidence interval for this (#4, Whites) proportion is (.124, .151). Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, the police do not follow the statistic above because they do not stop a larger porportion of Whites than Latinos.
+
+```{r}
 latinoArrest = subset(sqf2015, sqf2015$arstmade == 1 & 
                           (sqf2015$race == "BLACK-HISPANIC" | 
                                sqf2015$race == "WHITE-HISPANIC"))
@@ -241,3 +222,13 @@ prop.test(344, 2514, alternative = c("two.sided", "less", "greater"),
 # Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, it is not justified for police to stop more whites than latinos. 
 ```
 
+# Conclusion
+
+In conclusion, our analysis of the data suggests that the stop-question-frisk policy implemented by the NYPD often times shows signs of racial discrimination. The analysis of sex and borough in the required questions seems to suggest both categories are generally consistent. However, when we focused on race in the self-generated questions the data showed large discrepencies, generally of 95% confidence, between percentages of different treatments of different races. Thus, we can conclude that our data analysis suggests that the SQF policy allows for racial discrimination.
+
+# Bibliography
+
+New York Civil Liberties Union, "Stop and Frisk During the Bloomberg Administration", http://www.nyclu.
+org/files/publications/stopandfrisk_briefer_2002-2013_final.pdf
+
+Sampson, Robert J., Jeffrey D. Morenoff, and Stephen Raudenbush. "Social Anatomy of Racial and Ethnic Disparities in Violence." American Journal of Public Health 95.2 (2005): 224-232. PMC. Web. 10 Dec. 2016.
