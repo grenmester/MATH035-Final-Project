@@ -68,8 +68,8 @@ analyze = function(dataSet,title) {
     frisked = c()
     data = c()
     for (i in races) {
-        data = append(data,dataSet$frisked[dataSet$race == i])
-        frisked = append(frisked,sum(data) / length(data))
+        data = append(data,dataSet$frisked[dataSet$race==i])
+        frisked = append(frisked,sum(data)/length(data))
     }
     barplot(frisked,main=title,xlab='Race',ylab='Proportion Frisked',names.arg=races,cex.names=0.4,las=2)
 }
@@ -81,50 +81,46 @@ for (i in city) {
 queens = sqf2010[sqf2010$city=='QUEENS',]
 bronx = sqf2010[sqf2010$city=='BRONX',]
 
-sqf2010$raceWhite = relevel(sqf2010$race, 'WHITE')
-summary(lm(frisked ~ raceWhite, data=sqf2010))
+sqf2010$raceWhite = relevel(sqf2010$race,'WHITE')
+summary(lm(frisked ~ raceWhite,data=sqf2010))
 
 # most significant differences
-summary(lm(formula = frisked ~ raceWhite, data = subset(sqf2010, city == 'STATEN IS')))
+summary(lm(formula=frisked ~ raceWhite,data=subset(sqf2010,city=='STATEN IS')))
 
 # most similar rates
-summary(lm(formula = frisked ~ raceWhite, data = subset(sqf2010, city == 'QUEENS')))
+summary(lm(formula=frisked ~ raceWhite,data=subset(sqf2010,city=='QUEENS')))
 ```
 
 ```{r,eval=FALSE}
-summary(lm(formula = frisked ~ raceWhite, data = subset(sqf2010, city == 'BRONX')))
-summary(lm(formula = frisked ~ raceWhite, data = subset(sqf2010, city == 'BROOKLYN')))
-summary(lm(formula = frisked ~ raceWhite, data = subset(sqf2010, city == 'MANHATTAN')))
+summary(lm(formula=frisked ~ raceWhite,data=subset(sqf2010,city=='BRONX')))
+summary(lm(formula=frisked ~ raceWhite,data=subset(sqf2010,city=='BROOKLYN')))
+summary(lm(formula=frisked ~ raceWhite,data=subset(sqf2010,city=='MANHATTAN')))
 ```
 
 3. We analyzed the distribution of the ages of male suspects and female suspects individually and then compare them with each other. First, we took out extraneous data by creating subsets that exclude ages below 5 and above 98. To determine their individual distributions, we used qqnorm to check for normality and concluded that both male and female suspects' ages are distributed normally. To analyze both distributions in relation with each other, we used a qqplot with the subsets of the ages of male and female suspects. The qqplot appears to be linear, thus we concluded that the distributions are the same. Later, we analyzed the age distribution for male suspects in relation to the age distribution of the entire population of suspects stopped in 2010. Again, we created a subset of the population of stopped suspects by limitingthe age to between 5 and 98. We then compared using the qqplot command using the arguments of the male subset from earlier and the total populatio subset we created. Again, qqplot shows a linear relationship so we conclude the distributions are the same. In conclusion, both distributions of the ages of male and female suspects in 2010 are normally distributed. Both these age distributions are the same, and the the male age distribution and the total stopped suspect distribution are also the same.
 
 ```{r}
-agesM = subset(sqf2010, sqf2010$age>5&sqf2010$age<98&sqf2010$sex =="M")
-agesF = subset(sqf2010, sqf2010$age>5&sqf2010$age<98&sqf2010$sex =="F")
+agesM = subset(sqf2010,sqf2010$age>5 & sqf2010$age<98 & sqf2010$sex=="M")
+agesF = subset(sqf2010,sqf2010$age>5 & sqf2010$age<98 & sqf2010$sex=="F")
+agesStop = sqf2010$age[sqf2010$age>5 & sqf2010$age<98]
+par(mfrow=c(2,2))
 qqnorm(agesM$age)
+qqline(agesM$age)
 qqnorm(agesF$age)
-# both subsets of the age appear normal
+qqline(agesF$age)
 qqplot(agesM$age, agesF$age)
-# since the qqplot is a line, the distributions are the same.
-
-agesStop = sqf2010$age[sqf2010$age<98&sqf2010$age>5]
 qqplot(agesM$age, agesStop)
-# since the qqplot is a line, the distributions are the same.
 ```
 
 4. To analyze any differences between the probability of being frisked in general and the probability of being frisked when not providing identification, we first calculated the confidence intervals for both. To calculate the CI for the general sample of frisked suspects, we first found the sample size, mean, critical z-value, and standard deviation. Then using that information, we found the margin of error from the sample mean and used that to calculate the confidence interval. The interval for 2015 rate of being frisked is (0.6700898, 0.6823013). Thus we have 95% confidence that the probability of being frisked is between 0.67 and 0.68, roughly speaking. Similarly, we calculated the confidence interval of the sample of frisked suspects who didn't provide identification. In this case, our sample is the subset of 2015 suspects whose identification is listed as 'REFUSED'. Using the same process we found the CI of 95% confidence for the sample of 2015 frisked suspects who didn't provide ID. Our confidence interval came out as (0.5724871, 0.6481702). This means that the probability of being frisked having refused identification is between 0.57 and 0.65. In conclusion, these two samples have a significant difference in probability of being frisked. The confidence intervals don't overlap, which means that the the probability of anyone from the general population of being frisked is outside the 95% confidence interval of that of those who refused identification. Basically, we conclude from our data that we have significant enough data to say that in 2015 there is a smaller probability of being frisked when identification is refused.
 
 ```{r}
-#4.
-sample_size = 22563
-# the sample size of the 2015 data set is 22563
-sample_mean <- mean(sqf2015$frisked)
-z_critical <- qnorm(0.975)
-pop_stdev <- sd(sqf2015$frisked)
-margin_of_error <- z_critical * (pop_stdev / sqrt(sample_size))
-confidence_interval <- c(sample_mean - margin_of_error,
-                         sample_mean + margin_of_error)
+sample_size = length(sqf2015$frisked)
+sample_mean = mean(sqf2015$frisked)
+z_critical = qnorm(0.975)
+pop_stdev = sd(sqf2015$frisked)
+margin_of_error = z_critical * (pop_stdev / sqrt(sample_size))
+confidence_interval = c(sample_mean - margin_of_error,sample_mean + margin_of_error)
 print("Confidence interval:")
 confidence_interval
 
