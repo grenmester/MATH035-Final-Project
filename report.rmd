@@ -193,6 +193,8 @@ prop.test(7761, 8749, alternative = c("two.sided", "less", "greater"),
 According to this analysis of race and crime in Chicago, Black people are 85\% more likely than Whites to commit a violent crime compared to whites, while Latino people are 10\% less likely than Whites. Compare this data to the proportion of Black and Latino people who were stopped. (3)Does the data of sqf2015 suggest that police follow the statistic above comparing Black and White crime rates when stopping people? (4)Does the data of sqf2015 suggest that police follow the statistic above comparing Latino and White crime rates when stopping people?
 Link: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1449156/
 
+The 95% confidence interval for this proportion (of blacks who were arrested out of all Black individuals who were stopped by the police) is (.160, .174). The 95% confidence interval for this proportion (of Whites who were arrested out of all White individuals who were stopped by the police) is (.124, .151). Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, the police do follow the statistic above because they do stop a larger porportion of Blacks than Whites. The 95% confidence interval for this proportion (#4, Latinos) is (.209, .229). The 95% confidence interval for this (#4, Whites) proportion is (.124, .151). Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, the police do not follow the statistic above because they do not stop a larger porportion of Whites than Latinos.
+
 ```{r}
 # Question 3
 blackArrest = subset(sqf2015, sqf2015$arstmade == 1 & sqf2015$race == "BLACK")
