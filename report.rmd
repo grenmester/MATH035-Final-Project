@@ -161,9 +161,72 @@ qqplot(m_best$fitted.values, m_best$residuals)
 
 Self-generated questions:
 
-According to an analysis of the Stop and Frisk measure between 2002 and 2013 done by the New York Civil Liberties Union, young black and Latino men were stopped disproportionately by a huge margin. It claimed that black and Latino males between the ages of 14 and 24 accounted for 41 percent of stops between 2003 and 2013, even though they were only 4.7 of the total city population. Furthermore, according to their analysis, nearly 90 percent of young black and Latino men stopped were innocent.
-Verify if these trends continued in the year 2015.
+According to an analysis of the Stop and Frisk measure between 2002 and 2013 done by the New York Civil Liberties Union, young black and Latino men were stopped disproportionately by a huge margin. It claimed that:
+(1) Black and Latino males between the ages of 14 and 24 accounted for 41 percent of stops between 2003 and 2013, even though they were only 4.7 of the total city population. (2) Furthermore, according to their analysis, 90 percent of young black and Latino men stopped were innocent.
+Verify that these trends continued in the year 2015.
 Link: http://www.nyclu.org/files/publications/stopandfrisk_briefer_2002-2013_final.pdf
 
-According to this analysis of race and crime in Chicago, Black people are 85\% more likely than Whites to commit a violent crime compared to whites, while Latino people are 10\% less likely than Whites. Compare this data to the proportion of Black and Latino people who were stopped. Does the data support stopping Blacks and Latinos at different rates?
+```{r}
+# Question 1
+ages1424BL= subset(sqf2015, sqf2015$age>13 & sqf2015$age<25 & (sqf2015$race =="BLACK" | sqf2015$race == "WHITE-HISPANIC" | sqf2015$race == "BLACK-HISPANIC"))
+ages1424BLM = subset(ages1424BL, ages1424BL$sex == "M")
+dim(ages1424BLM)
+# the number of samples in sqf2015 given that one is male, black or hispanic, and between the ages 14 and 24 is 8749.
+dim(sqf2015)
+# the number of samples in sqf2015 is 22563
+prop.test(8749, 22563, alternative = c("two.sided", "less", "greater"), conf.level = .95)
+# the 95% confidence interval for this proportion is (.381, .394).
+# Since .41 is not in our 95% confidence interval, we can conclude that the proportion of males who are black or latino between the ages 14 and 24 decreased in 2015 compared to the percentage in 2003 to 2013.
+
+
+#Question 2
+ages1424BLMI = subset(ages1424BLM, ages1424BL$arstmade == 0)
+dim(ages1424BLMI)
+# the number of samples in sqf2015 given that one is male, black or hispanic, between the ages 14 and 24, and innocent is 7761
+dim(ages1424BLM)
+# the number of samples in sqf2015 given that one is male, black or hispanic, and between the ages 14 and 24 is 8749.
+prop.test(7761, 8749, alternative = c("two.sided", "less", "greater"), conf.level = .95)
+# the 95% confidence interval for this proportion is (.880, .894).
+# Since .9 is not in our 95% confidence interval, we can conclude that the proportion of males who are black or latino, between the ages 14 and 24, and innocent decreased in 2015 compared to the percentage in 2003 to 2013.
+```
+
+According to this analysis of race and crime in Chicago, Black people are 85\% more likely than Whites to commit a violent crime compared to whites, while Latino people are 10\% less likely than Whites. Compare this data to the proportion of Black and Latino people who were stopped. (3)Does the data of sqf2015 support stopping blacks at higher rates compared to whites? (4)Does the data of sqf2015 support stopping latinos at lower rates compared?
 Link: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1449156/
+
+```{r}
+# Question 3
+blackArrest = subset(sqf2015, sqf2015$arstmade == 1 & sqf2015$race == "BLACK")
+whiteArrest = subset(sqf2015,sqf2015$arstmade == 1 & sqf2015$race == "WHITE")
+
+#proportion of blacks who were arrested out of all black individuals who were stopped by the police.
+dim(blackArrest)
+dim(subset(sqf2015, sqf2015$race == "BLACK"))
+
+prop.test(1993, 11950, alternative = c("two.sided", "less", "greater"), conf.level = .95)
+# the 95% confidence interval for this proportion is (.160, .174).
+
+dim(whiteArrest)
+dim(subset(sqf2015, sqf2015$race == "WHITE"))
+
+prop.test(344, 2514, alternative = c("two.sided", "less", "greater"), conf.level = .95)
+# the 95% confidence interval for this proportion is (.124, .151).
+# Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, it is justified for police to stop more blacks than whites. 
+
+# Question 4
+latinoArrest = subset(sqf2015, sqf2015$arstmade == 1 & (sqf2015$race == "BLACK-HISPANIC" | sqf2015$race == "WHITE-HISPANIC"))
+
+#proportion of blacks who were arrested out of all black individuals who were stopped by the police.
+dim(latinoArrest)
+dim(subset(sqf2015, sqf2015$race == "BLACK-HISPANIC" | sqf2015$race == "WHITE-HISPANIC"))
+
+prop.test(1423, 6499, alternative = c("two.sided", "less", "greater"), conf.level = .95)
+# the 95% confidence interval for this proportion is (.209, .229).
+
+dim(whiteArrest)
+dim(subset(sqf2015, sqf2015$race == "WHITE"))
+
+prop.test(344, 2514, alternative = c("two.sided", "less", "greater"), conf.level = .95)
+# the 95% confidence interval for this proportion is (.124, .151).
+# Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, it is not justified for police to stop more whites than latinos. 
+```
+
