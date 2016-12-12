@@ -99,7 +99,7 @@ summary(lm(formula=frisked ~ raceWhite,data=subset(sqf2010,city=='BROOKLYN')))
 summary(lm(formula=frisked ~ raceWhite,data=subset(sqf2010,city=='MANHATTAN')))
 ```
 
-3. We analyzed the distribution of the ages of male suspects and female suspects individually and then compare them with each other. First, we took out extraneous data by creating subsets that exclude ages below 5 and above 98. To determine their individual distributions, we used qqnorm to check for normality and concluded that both male and female suspects' ages are distributed normally. To analyze both distributions in relation with each other, we used a qqplot with the subsets of the ages of male and female suspects. The qqplot appears to be linear, thus we concluded that the distributions are the same. Later, we analyzed the age distribution for male suspects in relation to the age distribution of the entire population of suspects stopped in 2010. Again, we created a subset of the population of stopped suspects by limitingthe age to between 5 and 98. We then compared using the qqplot command using the arguments of the male subset from earlier and the total populatio subset we created. Again, qqplot shows a linear relationship so we conclude the distributions are the same. In conclusion, both distributions of the ages of male and female suspects in 2010 are normally distributed. Both these age distributions are the same, and the the male age distribution and the total stopped suspect distribution are also the same.
+3. We analyzed the distribution of the ages of male suspects and female suspects individually and then compare them with each other. First, we took out extraneous data by creating subsets that exclude ages below 5 and above 98. To determine their individual distributions, we used qqnorm to check for normality and concluded that both male and female suspects' ages are distributed normally. To analyze both distributions in relation with each other, we used a qqplot with the subsets of the ages of male and female suspects. The qqplot appears to be linear, thus we concluded that the distributions are the same. Later, we analyzed the age distribution for male suspects in relation to the age distribution of the entire population of suspects stopped in 2010. Again, we created a subset of the population of stopped suspects by limiting the age to between 5 and 98. We then compared using the qqplot command using the arguments of the male subset from earlier and the total population subset we created. Again, qqplot shows a linear relationship so we conclude the distributions are the same. In conclusion, both distributions of the ages of male and female suspects in 2010 are normally distributed. Both these age distributions are the same, and the the male age distribution and the total stopped suspect distribution are also the same.
 
 ```{r}
 agesM = subset(sqf2010,sqf2010$age>5 & sqf2010$age<98 & sqf2010$sex=="M")
@@ -173,8 +173,6 @@ To identify the presence of this trend in the 2015 suspect data, we created a su
 
 To test our hypothesis, we first created a subset of the male Black/Hispanic between 14 and 24 sample we created in part 1. We narrowed down that sample by specifying "arrest made" as negative, or 0. The number of non-arrested Black/Hispanic male suspects between 14 and 24 is 7761. The 95% confidence interval using that number and the number of total Black/Hispanic young, male suspects stopped (8749 found in part 1) is (0.880, 0.894). In this situation, we reject the null hypothesis because 90% (or 0.9) is not within the confidence interval we found for the 2015 data. We can say with 95% confidence that the percentage of non-arrested from the set of Black/Hispanic stopped male suspects (between 14-24) decreased from 2002-2013. This suggests that more of the stopped suspects were found to be guilty enough for arrest. We can speculate that racial discrimination decreased because more of the stopped suspects should have been stopped and so less stopped suspects were stopped without "reason". 
 
-***(idk if I can say this question is significant because of racial discrimination tho because u could also argue that the percentage decreased because police are arresting more innocent people so racial discrimination actual increased)
-
 ```{r}
 # Question 1
 ages1424BL= subset(sqf2015, sqf2015$age>13 & sqf2015$age<25 & (sqf2015$race =="BLACK" | sqf2015$race == "WHITE-HISPANIC" | sqf2015$race == "BLACK-HISPANIC"))
@@ -238,6 +236,10 @@ prop.test(344, 2514, alternative = c("two.sided", "less", "greater"), conf.level
 # the 95% confidence interval for this proportion is (.124, .151).
 # Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, the police do not follow the statistic above because they do not stop a larger porportion of Whites than Latinos. 
 ```
+
+Conclusion:
+
+In conclusion, our analysis of the data suggests that the stop-question-frisk policy implemented by the NYPD often times shows signs of racial discrimination. The analysis of sex and borough in the required questions seems to suggest both categories are generally consistent. However, when we focused on race in the self-generated questions the data showed large discrepencies, generally of 95% confidence, between percentages of different treatments of different races. Thus, we can conclude that our data analysis suggests that the SQF policy allows for racial discrimination.
 
 Bibliography:
 
