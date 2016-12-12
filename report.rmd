@@ -19,9 +19,7 @@ sqf2015 = read.csv("2015_sqf_m35.csv")
 
 **The report should have the following structure:**
 
-1. Introduction (overview in your own words of the data; summary of your team's chosen question, why it's important, and what you found; roadmap for the remainder of the report.) To generate our questions, we analyzed two papers, "Stop and Frisk During the Bloomberg Administration" and "Social Anatomy of Racial and Ethnic Disparities in Violence." Using a few claims from these papers, we analyzed whether or not our data supported such claims. These claims include: young Black and Latino males accounted for a disproportionate amount of stops; the vast majority of those stopped were stopped for no reason; the police followed statistics that related race and crime for both Blacks and Latinos. 
-Overall, we found that Blacks and Latinos did indeed constitute a disproportionate amount of stops, of which an extraordinarily large portion were not justified. Furthermore, the police do follow statistical trends for crime for Blacks, but not for Latinos. This importance of these findings is that they suggest that police may be guilty of racial discrimination when stopping people, especially Black and Latino males between the ages of 14 and 24. 
-In the following sections, we performed various statistical analyses of the data set, using statistical models learned in the Math 35 course at Harvey Mudd College, including hypothesis testing, confidence intervals, and linear models. 
+1. Introduction (overview in your own words of the data; summary of your team's chosen question, why it's important, and what you found; roadmap for the remainder of the report.)
 
 2. Responses to required questions: Please list each question/answer separately, but write formal responses to the questions.
 
@@ -42,7 +40,7 @@ In the following sections, we performed various statistical analyses of the data
 
 - Significance: The team-chosen question(s) leverage the available data to provide insight into the stop-question-frisk policy.
 
-In this paper, we explored the trends in those who were stopped by the New York Police Department in the years 2010 and 2015, according to the implemented Stop, Question, and Frisk measure (SQF). This data contained various statistics, from physical attributes of the suspect to the nature of the stop (location, time spent waiting, what was found on the suspect, etc.) 
+(No Intro yet)
 
 1. The question asks for the conditional probability that you are actually a certain race given you are identified as that race, P(actual | tested) where tested implies identification. We are given the probability of correct identification. Thus, given the data from SQF2010, we are able to set up a system of equations to solve for the number of true Asians and true Hispanics. We used this information to calculate the probability of actually being Asian/Hispanic given the identification. This calculation shows us that the actual proportions of Asians and Hispanics is different from what the data claims it to be.
 
@@ -98,7 +96,7 @@ summary(lm(formula=frisked ~ raceWhite,data=subset(sqf2010,city=='BROOKLYN')))
 summary(lm(formula=frisked ~ raceWhite,data=subset(sqf2010,city=='MANHATTAN')))
 ```
 
-3. We analyzed the distribution of the ages of male suspects and female suspects individually and then compare them with each other. First, we took out extraneous data by creating subsets that exclude ages below 5 and above 98. To determine their individual distributions, we used qqnorm to check for normality and concluded that both male and female suspects' ages are distributed normally. To analyze both distributions in relation with each other, we used a qqplot with the subsets of the ages of male and female suspects. The qqplot appears to be linear, thus we concluded that the distributions are the same. Later, we analyzed the age distribution for male suspects in relation to the age distribution of the entire population of suspects stopped in 2010. Again, we created a subset of the population of stopped suspects by limiting the age to between 5 and 98. We then compared using the qqplot command using the arguments of the male subset from earlier and the total population subset we created. Again, qqplot shows a linear relationship so we conclude the distributions are the same. In conclusion, both distributions of the ages of male and female suspects in 2010 are normally distributed. Both these age distributions are the same, and the the male age distribution and the total stopped suspect distribution are also the same.
+3. We analyzed the distribution of the ages of male suspects and female suspects individually and then compare them with each other. First, we took out extraneous data by creating subsets that exclude ages below 5 and above 98. To determine their individual distributions, we used qqnorm to check for normality and concluded that both male and female suspects' ages are distributed normally. To analyze both distributions in relation with each other, we used a qqplot with the subsets of the ages of male and female suspects. The qqplot appears to be linear, thus we concluded that the distributions are the same. Later, we analyzed the age distribution for male suspects in relation to the age distribution of the entire population of suspects stopped in 2010. Again, we created a subset of the population of stopped suspects by limitingthe age to between 5 and 98. We then compared using the qqplot command using the arguments of the male subset from earlier and the total populatio subset we created. Again, qqplot shows a linear relationship so we conclude the distributions are the same. In conclusion, both distributions of the ages of male and female suspects in 2010 are normally distributed. Both these age distributions are the same, and the the male age distribution and the total stopped suspect distribution are also the same.
 
 ```{r}
 agesM = subset(sqf2010,sqf2010$age>5 & sqf2010$age<98 & sqf2010$sex=="M")
@@ -136,12 +134,14 @@ confidence_interval = c(sample_mean - margin_of_error,
 confidence_interval
 ```
 
-5. 
+5. From our linear model, we determined that all binary factors were significant. The qqplot shows that the residuals are normal. Since the p-values are small for each of the variables, each variable was significant. 5% of the variablility in perstop is due to the explanatory variables selected. This makes sense since doing each of these things makes the stop time longer.
 
 ```{r}
 m_best = step(lm(formula = perstop ~ arstmade + searched + inside + sumissue + 
                      frisked + weap + contrabn + radio + pf, 
                  data = sqf2010[sqf2010$perstop<30,]))
+summary(m_best)
+par(mfrow=c(1,2))
 plot(m_best$fitted.values, m_best$residuals)
 qqplot(m_best$fitted.values, m_best$residuals)
 ```
@@ -162,6 +162,8 @@ To identify the presence of this trend in the 2015 suspect data, we created a su
 
 To test our hypothesis, we first created a subset of the male Black/Hispanic between 14 and 24 sample we created in part 1. We narrowed down that sample by specifying "arrest made" as negative, or 0. The number of non-arrested Black/Hispanic male suspects between 14 and 24 is 7761. The 95% confidence interval using that number and the number of total Black/Hispanic young, male suspects stopped (8749 found in part 1) is (0.880, 0.894). In this situation, we reject the null hypothesis because 90% (or 0.9) is not within the confidence interval we found for the 2015 data. We can say with 95% confidence that the percentage of non-arrested from the set of Black/Hispanic stopped male suspects (between 14-24) decreased from 2002-2013. This suggests that more of the stopped suspects were found to be guilty enough for arrest. We can speculate that racial discrimination decreased because more of the stopped suspects should have been stopped and so less stopped suspects were stopped without "reason". 
 
+***(idk if I can say this question is significant because of racial discrimination tho because u could also argue that the percentage decreased because police are arresting more innocent people so racial discrimination actual increased)
+
 ```{r}
 # Question 1
 ages1424BL= subset(sqf2015, sqf2015$age>13 & sqf2015$age<25 & 
@@ -169,28 +171,28 @@ ages1424BL= subset(sqf2015, sqf2015$age>13 & sqf2015$age<25 &
                             sqf2015$race == "BLACK-HISPANIC"))
 ages1424BLM = subset(ages1424BL, ages1424BL$sex == "M")
 dim(ages1424BLM)
-# the number of samples in sqf2015 given that one is male, Black or Hispanic, and between the ages 14 and 24 is 8749.
+# the number of samples in sqf2015 given that one is male, black or hispanic, and between the ages 14 and 24 is 8749.
 dim(sqf2015)
 # the number of samples in sqf2015 is 22563
 prop.test(8749, 22563, alternative = c("two.sided", "less", "greater"), 
           conf.level = .95)
 # the 95% confidence interval for this proportion is (.381, .394).
-# Since .41 is not in our 95% confidence interval, we can conclude that the proportion of males who are Black or Latino between the ages 14 and 24 decreased in 2015 compared to the percentage in 2003 to 2013.
+# Since .41 is not in our 95% confidence interval, we can conclude that the proportion of males who are black or latino between the ages 14 and 24 decreased in 2015 compared to the percentage in 2003 to 2013.
 
 
 #Question 2
 ages1424BLMI = subset(ages1424BLM, ages1424BL$arstmade == 0)
 dim(ages1424BLMI)
-# the number of samples in sqf2015 given that one is male, Black or Hispanic, between the ages 14 and 24, and not arrested is 7761
+# the number of samples in sqf2015 given that one is male, black or hispanic, between the ages 14 and 24, and not arrested is 7761
 dim(ages1424BLM)
-# the number of samples in sqf2015 given that one is male, Black or Hispanic, and between the ages 14 and 24 is 8749.
+# the number of samples in sqf2015 given that one is male, black or hispanic, and between the ages 14 and 24 is 8749.
 prop.test(7761, 8749, alternative = c("two.sided", "less", "greater"), 
           conf.level = .95)
 # the 95% confidence interval for this proportion is (.880, .894).
-# Since .9 is not in our 95% confidence interval, we can conclude that the proportion of males who are Black or Latino, between the ages 14 and 24, and not-arrested decreased in 2015 compared to the percentage in 2003 to 2013.
+# Since .9 is not in our 95% confidence interval, we can conclude that the proportion of males who are black or latino, between the ages 14 and 24, and not-arrested decreased in 2015 compared to the percentage in 2003 to 2013.
 ```
 
-According to this analysis of race and crime in Chicago, Black people are 85\% more likely than Whites to commit a violent crime compared to whites, while Latino people are 10\% less likely than Whites. Compare this data to the proportion of Black and Latino people who were stopped. (3)Does the data of sqf2015 suggest that police follow the statistic above comparing Black and White crime rates when stopping people? (4)Does the data of sqf2015 suggest that police follow the statistic above comparing Latino and White crime rates when stopping people?
+According to this analysis of race and crime in Chicago, Black people are 85% more likely than Whites to commit a violent crime compared to whites, while Latino people are 10% less likely than Whites. Compare this data to the proportion of Black and Latino people who were stopped. (3)Does the data of sqf2015 support stopping blacks at higher rates compared to whites? (4)Does the data of sqf2015 support stopping latinos at lower rates compared?
 Link: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1449156/
 
 ```{r}
@@ -198,7 +200,7 @@ Link: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1449156/
 blackArrest = subset(sqf2015, sqf2015$arstmade == 1 & sqf2015$race == "BLACK")
 whiteArrest = subset(sqf2015,sqf2015$arstmade == 1 & sqf2015$race == "WHITE")
 
-#proportion of blacks who were arrested out of all Black individuals who were stopped by the police.
+#proportion of blacks who were arrested out of all black individuals who were stopped by the police.
 dim(blackArrest)
 dim(subset(sqf2015, sqf2015$race == "BLACK"))
 
@@ -212,14 +214,14 @@ dim(subset(sqf2015, sqf2015$race == "WHITE"))
 prop.test(344, 2514, alternative = c("two.sided", "less", "greater"), 
           conf.level = .95)
 # the 95% confidence interval for this proportion is (.124, .151).
-# Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, the police do follow the statistic above because they do stop a larger porportion of Blacks than Whites. 
+# Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, it is justified for police to stop more blacks than whites. 
 
 # Question 4
 latinoArrest = subset(sqf2015, sqf2015$arstmade == 1 & 
                           (sqf2015$race == "BLACK-HISPANIC" | 
                                sqf2015$race == "WHITE-HISPANIC"))
 
-#proportion of blacks who were arrested out of all Black individuals who were stopped by the police.
+#proportion of blacks who were arrested out of all black individuals who were stopped by the police.
 dim(latinoArrest)
 dim(subset(sqf2015, sqf2015$race == "BLACK-HISPANIC" | 
                sqf2015$race == "WHITE-HISPANIC"))
@@ -234,16 +236,6 @@ dim(subset(sqf2015, sqf2015$race == "WHITE"))
 prop.test(344, 2514, alternative = c("two.sided", "less", "greater"), 
           conf.level = .95)
 # the 95% confidence interval for this proportion is (.124, .151).
-# Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, the police do not follow the statistic above because they do not stop a larger porportion of Whites than Latinos. 
+# Based on the results from the two proportion tests above, since the confidence intervals do not overlap, statistically speaking, it is not justified for police to stop more whites than latinos. 
 ```
 
-Conclusion:
-
-In conclusion, our analysis of the data suggests that the stop-question-frisk policy implemented by the NYPD often times shows signs of racial discrimination. The analysis of sex and borough in the required questions seems to suggest both categories are generally consistent. However, when we focused on race in the self-generated questions the data showed large discrepencies, generally of 95% confidence, between percentages of different treatments of different races. Thus, we can conclude that our data analysis suggests that the SQF policy allows for racial discrimination.
-
-Bibliography:
-
-New York Civil Liberties Union, "Stop and Frisk During the Bloomberg Administration", http://www.nyclu.
-org/files/publications/stopandfrisk_briefer_2002-2013_final.pdf
-
-Sampson, Robert J., Jeffrey D. Morenoff, and Stephen Raudenbush. "Social Anatomy of Racial and Ethnic Disparities in Violence." American Journal of Public Health 95.2 (2005): 224-232. PMC. Web. 10 Dec. 2016.
